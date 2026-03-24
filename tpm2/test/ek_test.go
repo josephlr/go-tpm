@@ -231,8 +231,8 @@ func TestCalculatePolicyB(t *testing.T) {
 // Test creating a sealed data blob on the standard-template EK using its policy.
 func TestEKPolicy(t *testing.T) {
 	templates := map[string]TPMTPublic{
-		"RSA": RSAEKTemplate,
-		"ECC": ECCEKTemplate,
+		"RSA": TemplateL1.PublicEK(),
+		"ECC": TemplateL2.PublicEK(),
 	}
 
 	// Run the whole test for each of RSA and ECC EKs.
@@ -257,8 +257,10 @@ func ekPolicy(t transport.TPM, handle TPMISHPolicy, nonceTPM TPM2BNonce) error {
 func ekTest(t *testing.T, ekTemplate TPMTPublic) {
 	// Before using the EK, ensure it has the expected policy.
 	policy := ekTemplate.AuthPolicy
-	expected := PolicyA[ekTemplate.NameAlg]
-	if !bytes.Equal(policy.Buffer, expected.Buffer) {
+	expected, err := AuthPolicyA(ekTemplate.NameAlg)
+	if err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(policy.Buffer, expected.Buffer) {
 		t.Errorf("AuthPolicy = %x,\nwant %x", policy.Buffer, expected.Buffer)
 	}
 

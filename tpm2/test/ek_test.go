@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	. "github.com/google/go-tpm/tpm2"
+	"github.com/google/go-tpm/tpm2/test/templates"
 	"github.com/google/go-tpm/tpm2/transport"
 	"github.com/google/go-tpm/tpm2/transport/simulator"
 )
@@ -133,6 +134,41 @@ func TestCalculatePolicyB(t *testing.T) {
 			digest := pol.Hash().Digest
 			if !bytes.Equal(digest, policyB.Buffer) {
 				t.Errorf("PolicyB = %x,\nwant %x", digest, policyB.Buffer)
+			}
+		})
+	}
+}
+
+var testedTemplates = []Template{
+	TemplateL1,
+	TemplateL2,
+	TemplateH1,
+	TemplateH2,
+	TemplateH3,
+	TemplateH4,
+	// TODO: Test H-5 once https://github.com/google/go-tpm/pull/426 is fixed.
+	// TemplateH5,
+	TemplateH6,
+	TemplateH7,
+}
+
+// Test that EKs and SRKs marshal to their expected values
+func TestMarshalTemplates(t *testing.T) {
+	for _, template := range testedTemplates {
+		t.Run(template.String(), func(t *testing.T) {
+			// Check marshaled EK against expected if we have one.
+			ekBytes := Marshal(template.PublicEK())
+			if expected, ok := templates.EKBytes[template]; ok {
+				if !bytes.Equal(ekBytes, expected) {
+					t.Errorf("EK bytes mismatch\ngot: %x\nwant: %x", ekBytes, expected)
+				}
+			}
+			// Check marshaled SRK against expected if we have one.
+			srkBytes := Marshal(template.PublicSRK())
+			if expected, ok := templates.SRKBytes[template]; ok {
+				if !bytes.Equal(srkBytes, expected) {
+					t.Errorf("SRK bytes mismatch\ngot: %x\nwant: %x", srkBytes, expected)
+				}
 			}
 		})
 	}

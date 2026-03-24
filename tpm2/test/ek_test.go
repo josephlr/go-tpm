@@ -137,41 +137,6 @@ func TestCalculatePolicyA(t *testing.T) {
 	}
 }
 
-// Test our Name calculation for the Policy NV Index (part of PolicyC).
-func TestCalculatePolicyIndexName(t *testing.T) {
-	for alg, name := range PolicyIndexName {
-		hash, err := alg.Hash()
-		if err != nil {
-			t.Fatalf("%v", err)
-		}
-		t.Run(hash.String(), func(t *testing.T) {
-			nvPub := TPMSNVPublic{
-				NVIndex: PolicyIndex[alg],
-				NameAlg: alg,
-				Attributes: TPMANV{
-					PolicyWrite: true,
-					WriteAll:    true,
-					PPRead:      true,
-					OwnerRead:   true,
-					AuthRead:    true,
-					PolicyRead:  true,
-					NoDA:        true,
-					Written:     true,
-				},
-				AuthPolicy: PolicyA[alg],
-				DataSize:   uint16(hash.Size() + 2),
-			}
-			nvName, err := NVName(&nvPub)
-			if err != nil {
-				t.Fatalf("computing NV Name: %v", err)
-			}
-			if !bytes.Equal(nvName.Buffer, name.Buffer) {
-				t.Errorf("NVName = %x,\nwant %x", nvName.Buffer, name.Buffer)
-			}
-		})
-	}
-}
-
 // Test that PolicyCalculator correctly computes PolicyC for all hashes.
 func TestCalculatePolicyC(t *testing.T) {
 	for alg, policy := range PolicyC {

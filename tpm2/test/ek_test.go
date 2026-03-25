@@ -146,8 +146,7 @@ var testedTemplates = []Template{
 	TemplateH2,
 	TemplateH3,
 	TemplateH4,
-	// TODO: Test H-5 once https://github.com/google/go-tpm/pull/426 is fixed.
-	// TemplateH5,
+	TemplateH5,
 	TemplateH6,
 	TemplateH7,
 }

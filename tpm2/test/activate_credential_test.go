@@ -123,7 +123,7 @@ func TestActivateTPMCredential(t *testing.T) {
 		KeyHandle: AuthHandle{
 			Handle: ekCreateRsp.ObjectHandle,
 			Name:   ekCreateRsp.Name,
-			Auth:   Policy(TPMAlgSHA256, 16, ekPolicy),
+			Auth:   Policy(TPMAlgSHA256, 16, ekPolicyA),
 		},
 		CredentialBlob: mcRsp.CredentialBlob,
 		Secret:         mcRsp.Secret,

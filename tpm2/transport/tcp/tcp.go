@@ -205,6 +205,19 @@ func (t *TPM) Reset() error {
 	return t.sendBasicPlatformCommand(platformReset)
 }
 
+// Stop tells the simulator process to exit.
+func (t *TPM) Stop() error {
+	var errs []error
+	if err := binary.Write(t.cmd, binary.BigEndian, tpmStop); err != nil {
+		errs = append(errs, fmt.Errorf("could not write STOP to command service: %w", err))
+	}
+	if err := binary.Write(t.plat, binary.BigEndian, platformStop); err != nil {
+		errs = append(errs, fmt.Errorf("could not write STOP to platform service: %w", err))
+	}
+	return errors.Join(errs...)
+}
+
+
 // Config provides the connection information for a running TCP TPM.
 type Config struct {
 	// CommandAddress is the full host:port address of the Command server, e.g.,
